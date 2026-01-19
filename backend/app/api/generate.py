@@ -1,9 +1,12 @@
+import time
 from fastapi import APIRouter
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+
 from backend.app.llm.ollama_llama import OllamaLlamaProvider
 from backend.app.db import SessionLocal
-from backend.app.models import Prompt
+from backend.app.models import Prompt, InferenceLog
+from backend.app.utils import estimate_tokens
 
 router = APIRouter()
 llm = OllamaLlamaProvider()
@@ -23,15 +26,32 @@ def generate_text(request: GenerateRequest):
     )
 
     if not prompt:
+        db.close()
         return {"error": "No active prompt found"}
 
     full_prompt = f"{prompt.prompt_text}\nUser: {request.user_input}"
 
+    start_time = time.time()
     response = llm.generate(full_prompt)
+    latency_ms = (time.time() - start_time) * 1000
 
+    token_count = estimate_tokens(full_prompt + response)
+
+    log = InferenceLog(
+        prompt_name=prompt.name,
+        prompt_version=prompt.version,
+        model_name="llama3",
+        latency_ms=latency_ms,
+        token_count=token_count
+    )
+
+    db.add(log)
+    db.commit()
     db.close()
 
     return {
         "prompt_version": prompt.version,
+        "latency_ms": latency_ms,
+        "tokens": token_count,
         "response": response
     }

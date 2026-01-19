@@ -14,3 +14,17 @@ class Prompt(Base):
     traffic_percentage = Column(Float, default=0.0)
 
     created_at = Column(DateTime, default=datetime.utcnow)
+
+class InferenceLog(Base):
+    __tablename__ = "inference_logs"
+
+    id = Column(Integer, primary_key=True)
+    prompt_name = Column(String)
+    prompt_version = Column(Integer)
+
+    model_name = Column(String)
+    latency_ms = Column(Float)
+    token_count = Column(Integer)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
