@@ -1,0 +1,11 @@
+[
+    {
+      "input": "What is LLMOps?",
+      "expected": "LLMOps is the practice of managing, evaluating, and monitoring LLM systems in production."
+    },
+    {
+      "input": "Why do LLM systems fail after deployment?",
+      "expected": "They fail due to prompt changes, data drift, lack of evaluation, and missing feedback loops."
+    }
+  ]
+  
