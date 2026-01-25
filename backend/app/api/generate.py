@@ -29,7 +29,12 @@ def generate_text(request: GenerateRequest):
         db.close()
         return {"error": "No active prompt found"}
 
-    full_prompt = f"{prompt.prompt_text}\nUser: {request.user_input}"
+    # 🔒 Extract values BEFORE session closes
+    prompt_name = prompt.name
+    prompt_version = prompt.version
+    prompt_text = prompt.prompt_text
+
+    full_prompt = f"{prompt_text}\nUser: {request.user_input}"
 
     start_time = time.time()
     response = llm.generate(full_prompt)
@@ -38,8 +43,8 @@ def generate_text(request: GenerateRequest):
     token_count = estimate_tokens(full_prompt + response)
 
     log = InferenceLog(
-        prompt_name=prompt.name,
-        prompt_version=prompt.version,
+        prompt_name=prompt_name,
+        prompt_version=prompt_version,
         model_name="llama3",
         latency_ms=latency_ms,
         token_count=token_count
@@ -50,7 +55,7 @@ def generate_text(request: GenerateRequest):
     db.close()
 
     return {
-        "prompt_version": prompt.version,
+        "prompt_version": prompt_version,
         "latency_ms": latency_ms,
         "tokens": token_count,
         "response": response
