@@ -1,4 +1,5 @@
 import time
+import random
 from fastapi import APIRouter
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -19,20 +20,35 @@ class GenerateRequest(BaseModel):
 def generate_text(request: GenerateRequest):
     db: Session = SessionLocal()
 
-    prompt = (
+    prompts = (
         db.query(Prompt)
         .filter(Prompt.name == request.prompt_name, Prompt.status == "active")
-        .first()
+        .all()
     )
 
-    if not prompt:
+    if not prompts:
         db.close()
         return {"error": "No active prompt found"}
 
-    # 🔒 Extract values BEFORE session closes
-    prompt_name = prompt.name
-    prompt_version = prompt.version
-    prompt_text = prompt.prompt_text
+
+
+    total_weight = sum(p.traffic_weight for p in prompts)
+    r = random.uniform(0, total_weight)
+
+    upto = 0
+    selected = prompts[0]
+
+
+    for p in prompts:
+        upto += p.traffic_weight
+        if upto >= r:
+            selected = p
+            break
+
+    prompt_name = selected.name
+    prompt_version = selected.version
+    prompt_text = selected.prompt_text
+
 
     full_prompt = f"{prompt_text}\nUser: {request.user_input}"
 

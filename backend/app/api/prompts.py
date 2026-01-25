@@ -24,10 +24,11 @@ def create_prompt(data: PromptCreate):
     version = 1 if not latest else latest.version + 1
 
     prompt = Prompt(
-        name=data.name,
-        version=version,
-        prompt_text=data.prompt_text,
-        status="inactive"
+        name=request.name,
+        version=request.version,
+        prompt_text=request.prompt_text,
+        status="inactive",
+        traffic_weight=0.0
     )
 
     db.add(prompt)

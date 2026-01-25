@@ -9,9 +9,8 @@ class Prompt(Base):
     name = Column(String, index=True)
     version = Column(Integer)
     prompt_text = Column(Text)
-
-    status = Column(String, default="inactive")  
-    traffic_percentage = Column(Float, default=0.0)
+    status = Column(String)
+    traffic_weight = Column(Float, default=1.0)  # NEW
 
     created_at = Column(DateTime, default=datetime.utcnow)
 
