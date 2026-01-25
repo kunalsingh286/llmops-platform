@@ -20,12 +20,17 @@ class InferenceLog(Base):
     id = Column(Integer, primary_key=True)
     prompt_name = Column(String)
     prompt_version = Column(Integer)
-
     model_name = Column(String)
+
     latency_ms = Column(Float)
     token_count = Column(Integer)
 
+    cost = Column(Float)  # NEW
+
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+
 
 class Feedback(Base):
     __tablename__ = "feedback"

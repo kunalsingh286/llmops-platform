@@ -58,12 +58,18 @@ def generate_text(request: GenerateRequest):
 
     token_count = estimate_tokens(full_prompt + response)
 
+    COST_PER_1K_TOKENS = 0.002  # proxy cost in USD
+
+    cost = (token_count / 1000) * COST_PER_1K_TOKENS
+
+
     log = InferenceLog(
         prompt_name=prompt_name,
         prompt_version=prompt_version,
         model_name="llama3",
         latency_ms=latency_ms,
-        token_count=token_count
+        token_count=token_count,
+        cost=cost
     )
 
     db.add(log)
