@@ -28,3 +28,19 @@ class InferenceLog(Base):
 
     created_at = Column(DateTime, default=datetime.utcnow)
 
+class Feedback(Base):
+    __tablename__ = "feedback"
+
+    id = Column(Integer, primary_key=True)
+    prompt_name = Column(String)
+    prompt_version = Column(Integer)
+
+    user_input = Column(Text)
+    model_output = Column(Text)
+
+    rating = Column(Integer)  # 1 = bad, 5 = good
+    comment = Column(Text)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
