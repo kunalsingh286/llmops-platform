@@ -4,13 +4,15 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from backend.app.llm.ollama_llama import OllamaLlamaProvider
+from backend.app.llm.factory import get_llm
 from backend.app.db import SessionLocal
 from backend.app.models import Prompt, InferenceLog
 from backend.app.utils import estimate_tokens
 
+
+
 router = APIRouter()
-llm = OllamaLlamaProvider()
+
 
 class GenerateRequest(BaseModel):
     prompt_name: str
@@ -53,6 +55,7 @@ def generate_text(request: GenerateRequest):
     full_prompt = f"{prompt_text}\nUser: {request.user_input}"
 
     start_time = time.time()
+    llm = get_llm(selected.model_name)
     response = llm.generate(full_prompt)
     latency_ms = (time.time() - start_time) * 1000
 

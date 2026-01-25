@@ -10,9 +10,12 @@ class Prompt(Base):
     version = Column(Integer)
     prompt_text = Column(Text)
     status = Column(String)
-    traffic_weight = Column(Float, default=1.0)  # NEW
+    traffic_weight = Column(Float, default=1.0)
+
+    model_name = Column(String, default="llama3")  # NEW
 
     created_at = Column(DateTime, default=datetime.utcnow)
+
 
 class InferenceLog(Base):
     __tablename__ = "inference_logs"
@@ -20,7 +23,8 @@ class InferenceLog(Base):
     id = Column(Integer, primary_key=True)
     prompt_name = Column(String)
     prompt_version = Column(Integer)
-    model_name = Column(String)
+    model_name = Column(String, default="llama3")  # NEW
+
 
     latency_ms = Column(Float)
     token_count = Column(Integer)
